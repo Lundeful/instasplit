@@ -1,7 +1,10 @@
 import './App.css';
-import { ColorScheme, ColorSchemeProvider, Container, MantineProvider, Text } from '@mantine/core';
+import { ColorScheme, ColorSchemeProvider, Container, MantineProvider, Text, Title } from '@mantine/core';
 import { useColorScheme, useLocalStorage } from '@mantine/hooks';
 import { Header } from './layout/Header';
+import { Welcome } from './components/welcome/Welcome';
+
+// Primary color #f6416c
 
 function App() {
   const preferredColorScheme = useColorScheme();
@@ -17,9 +20,7 @@ function App() {
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
       <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
         <Header />
-        <Container>
-          <Text>Content</Text>
-        </Container>
+        <Welcome />
       </MantineProvider>
     </ColorSchemeProvider>
   );

@@ -1,5 +1,7 @@
-import { ActionIcon, Container, createStyles, Header as MantineHeader, Text, useMantineColorScheme } from '@mantine/core';
+import { ActionIcon, Anchor, Container, createStyles, Header as MantineHeader, Image, Text, useMantineColorScheme } from '@mantine/core';
+import { Link } from 'react-router-dom';
 import { MoonStars, Sun } from 'tabler-icons-react';
+import Logo from '../assets/instasplit-logo.svg';
 
 const HEADER_HEIGHT = 60;
 
@@ -11,7 +13,9 @@ export const Header = () => {
   return (
     <MantineHeader height={HEADER_HEIGHT}>
       <Container className={classes.header}>
-        <span>Instasplit</span>
+        <Anchor component={Link} to='/'>
+          <Image src={Logo} height={30} />
+        </Anchor>
         <ActionIcon variant='outline' color={dark ? 'yellow' : 'blue'} onClick={() => toggleColorScheme()} title='Toggle color scheme'>
           {dark ? <Sun size={18} /> : <MoonStars size={18} />}
         </ActionIcon>
