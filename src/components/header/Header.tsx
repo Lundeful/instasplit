@@ -15,7 +15,7 @@ export const Header = () => {
     <MantineHeader height={HEADER_HEIGHT}>
       <Container className={classes.header}>
         <Anchor component={Link} to='/'>
-          <Image src={Logo} height={30} />
+          <Image src={Logo} height={30} width={30}/>
         </Anchor>
         <ActionIcon variant='outline' color={dark ? 'yellow' : 'blue'} onClick={() => toggleColorScheme()} title='Toggle color scheme'>
           {dark ? <Sun size={18} /> : <MoonStars size={18} />}
