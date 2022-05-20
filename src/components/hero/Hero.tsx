@@ -23,36 +23,30 @@ export function Hero() {
         </Text>
 
         <div className={classes.controls}>
-          {process.env.NODE_ENV === 'development' ? (
-            <>
-              <Button
-                component={Link}
-                to={RouteKeys.Upload}
-                size='xl'
-                className={classes.control}
-                variant='gradient'
-                gradient={{ from: '#f6416c', to: '#f86789' }}
-              >
-                Start splitting
-              </Button>
-
-              <Button
-                component='a'
-                href='https://github.com/lundeful/instasplit'
-                size='xl'
-                variant='outline'
-                className={cx(classes.control, classes.githubControl)}
-                color={theme.colorScheme === 'dark' ? 'gray' : 'dark'}
-                disabled={true}
-              >
-                GitHub
-              </Button>
-            </>
-          ) : (
-            <Button size='xl' className={classes.control} variant='gradient' gradient={{ from: '#f6416c', to: '#f86789' }}>
-              Coming soon
+          <>
+            <Button
+              component={Link}
+              to={RouteKeys.Upload}
+              size='xl'
+              className={classes.control}
+              variant='gradient'
+              gradient={{ from: '#f6416c', to: '#f86789' }}
+            >
+              Start splitting
             </Button>
-          )}
+
+            <Button
+              component='a'
+              href='https://github.com/lundeful/instasplit'
+              size='xl'
+              variant='outline'
+              className={cx(classes.control, classes.githubControl)}
+              color={theme.colorScheme === 'dark' ? 'gray' : 'dark'}
+              disabled={true}
+            >
+              GitHub
+            </Button>
+          </>
         </div>
       </Container>
     </div>
