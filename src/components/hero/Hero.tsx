@@ -1,4 +1,5 @@
-import { Container, Text, Button, Group, useMantineTheme, Anchor } from '@mantine/core';
+import { Container, Text, Button, Group, useMantineTheme, Anchor, Title, Alert } from '@mantine/core';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { RouteKeys } from '../../App';
 import useStyles from './Hero.styles';
@@ -6,6 +7,8 @@ import useStyles from './Hero.styles';
 export function Hero() {
   const { classes, cx } = useStyles();
   const theme = useMantineTheme();
+
+  const [showAlert, setShowAlert] = useState(true);
 
   return (
     <div className={classes.wrapper}>
@@ -22,6 +25,12 @@ export function Hero() {
           Split one image into multiple images with a perfect seam to create those amazing panoramas on Instagram.
         </Text>
 
+        {showAlert && (
+          <Alert my='sm' title='Take note!' color='orange' withCloseButton onClose={() => setShowAlert(false)}>
+            <Text>This app is still early in development. Feel free to try it out, but expect unfinished functionality and bugs</Text>
+          </Alert>
+        )}
+
         <div className={classes.controls}>
           <>
             <Button
@@ -37,14 +46,15 @@ export function Hero() {
 
             <Button
               component='a'
-              href='https://github.com/lundeful/instasplit'
+              // href='https://github.com/lundeful/instasplit'
+              href='https://github.com/lundeful'
               size='xl'
               variant='outline'
               className={cx(classes.control, classes.githubControl)}
               color={theme.colorScheme === 'dark' ? 'gray' : 'dark'}
               disabled={true}
             >
-              GitHub
+              GitHub (soon&trade;)
             </Button>
           </>
         </div>
