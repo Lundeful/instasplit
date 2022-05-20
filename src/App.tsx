@@ -1,7 +1,6 @@
 import './App.css';
 import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core';
 import { useColorScheme, useLocalStorage } from '@mantine/hooks';
-import { Header } from './components/header/Header';
 import { Hero } from './components/hero/Hero';
 import { Route, Routes } from 'react-router-dom';
 import { Splitter } from './components/splitter/Splitter';

@@ -1,17 +1,14 @@
 import 'react-image-crop/dist/ReactCrop.css';
-import { Box, Button, Checkbox, Collapse, Container, Group, Image, InputWrapper, NumberInput, Paper, Select, SelectItem, Title } from '@mantine/core';
-import { SyntheticEvent, useEffect, useMemo, useRef, useState } from 'react';
-import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowBack, ArrowBackUp, ArrowsHorizontal, ArrowsVertical, Crop as CropIcon, Tool, Tools } from 'tabler-icons-react';
+import { Box, Button, Center, Collapse, Container, Group, Image, InputWrapper, Loader, NumberInput, Select, SelectItem, Title } from '@mantine/core';
+import { useEffect, useRef, useState } from 'react';
+import ReactCrop, { Crop, PercentCrop } from 'react-image-crop';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ArrowBackUp, ArrowsHorizontal, ArrowsVertical, Tool } from 'tabler-icons-react';
 import { RouteKeys } from '../../App';
 import { IncrementedNumberInput } from '../formcomponents/IncrementedNumberInput';
-import useStyles from './Splitter.styles';
+import { useDidUpdate } from '@mantine/hooks';
 
 export const Splitter = () => {
-  // Mantine hooks
-  const { classes } = useStyles();
-
   // Route state
   const [loading, setLoading] = useState(true);
   const location = useLocation();
@@ -20,19 +17,78 @@ export const Splitter = () => {
   // Image and crop state
   const imgRef = useRef<HTMLImageElement>(null);
   const [imgSrc, setImgSrc] = useState<string>('');
-  const [crop, setCrop] = useState<Crop>();
-  const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
+  const [crop, setCrop] = useState<Crop>({ width: 100, height: 50, x: 0, y: 25, unit: '%' });
+  const [completedCrop, setCompletedCrop] = useState<PercentCrop>();
   const [aspect, setAspect] = useState<number | undefined>();
 
   // Crop tools state
   const [showTools, setShowTools] = useState(false);
   const [numberOfSplits, setNumberOfSplits] = useState(2);
-  const [dropdownRatio, setDropdownRatio] = useState<string>('original');
+  const [desiredRatio, setDesiredRatio] = useState<string>('free');
   const [customRatio, setCustomRatio] = useState<{ width: number; height: number }>({ width: 1, height: 1 });
 
   useEffect(() => {
-    // if (!dropdownRatio)
-  }, [dropdownRatio]);
+    // Free aspect ratio
+    if (!desiredRatio || desiredRatio === 'free') {
+      setAspect(undefined);
+      return;
+    }
+
+    // Custom aspect ratio
+    if (desiredRatio === 'custom') {
+      setAspect(customRatio.width / customRatio.height);
+      return;
+    }
+
+    if (desiredRatio === 'original') {
+      const width = imgRef.current?.width;
+      const height = imgRef.current?.height;
+      if (!width || !height) return;
+
+      setAspect(width / height);
+      return;
+    }
+
+    // Use pre-defined aspect ratio
+    const newRatio = AspectRatios.find(ar => ar.value === desiredRatio);
+    // Couldn't find aspect ratio
+    if (!newRatio) {
+      setAspect(undefined);
+      return;
+    }
+
+    // Pre-defined aspect ratio
+    if (newRatio.aspect) {
+      setAspect(newRatio.aspect);
+      return;
+    }
+  }, [desiredRatio]);
+
+  useDidUpdate(() => {
+    if (desiredRatio === 'free' || !aspect || !imgRef.current) return;
+
+    const { width, height } = imgRef.current;
+
+    // We prefer full width crop, so we adjust height based on aspect ratio and number of images
+    const adjustedHeight = width / (aspect * numberOfSplits);
+
+    // If height is taller than image then we scale the crop
+    const multiplier = adjustedHeight > height ? height / adjustedHeight : 1;
+    const scaledHeight = adjustedHeight * multiplier;
+    const scaledWidth = width * multiplier;
+
+    // Place crop in center
+    const xCoordinate = multiplier < 1 ? (width - scaledWidth) / 2 : 0;
+    const yCoordinate = multiplier < 1 ? 0 : (height - adjustedHeight) / 2;
+
+    setCrop({ width: scaledWidth, height: scaledHeight, x: xCoordinate, y: yCoordinate, unit: 'px' });
+  }, [aspect, numberOfSplits]);
+
+  useDidUpdate(() => {
+    if (desiredRatio === 'custom') {
+      setAspect(customRatio.width / customRatio.height);
+    }
+  }, [customRatio]);
 
   useEffect(() => {
     // Return if to FilePicker state was not passed
@@ -45,20 +101,12 @@ export const Splitter = () => {
 
   const loadImageData = () => {
     const file = location.state as File;
-    setCrop(undefined); // Trigger crop preview re-render
     const reader = new FileReader();
     reader.addEventListener('load', () => {
       setImgSrc(reader.result?.toString() || '');
       setLoading(false);
     });
     reader.readAsDataURL(file);
-  };
-
-  const onImageLoad = (e: SyntheticEvent<HTMLImageElement>) => {
-    const { width, height } = e.currentTarget;
-
-    setCrop({ width: width, height: height, x: width, y: height, unit: 'px' });
-    setAspect(width / height);
   };
 
   return (
@@ -73,49 +121,60 @@ export const Splitter = () => {
           </Button>
         </Group>
         <Collapse in={showTools}>
-          {/* <Paper shadow='xs' p='xl' withBorder> */}
-            <Title order={3}>Crop settings</Title>
-            <Group sx={{ alignItems: 'flex-end' }}>
-              <IncrementedNumberInput label='Split into' value={numberOfSplits} setValue={setNumberOfSplits} max={20} min={1} />
-              <InputWrapper label='Aspect ratio'>
-                <Select value={dropdownRatio} data={AspectRatios} onChange={val => setDropdownRatio(val ?? '')} />
-                {dropdownRatio === 'custom' && (
-                  <Group mt={5} spacing={5}>
-                    <NumberInput
-                      value={customRatio.width}
-                      required
-                      icon={<ArrowsHorizontal />}
-                      max={1000}
-                      min={1}
-                      onChange={val => setCustomRatio({ width: val ?? customRatio.width, height: customRatio.height })}
-                    />
-                    <NumberInput
-                      value={customRatio.height}
-                      icon={<ArrowsVertical />}
-                      max={1000}
-                      min={1}
-                      onChange={val => setCustomRatio({ height: val ?? customRatio.height, width: customRatio.width })}
-                    />
-                  </Group>
-                )}
-              </InputWrapper>
-            </Group>
-          {/* </Paper> */}
+          <Title order={3}>Crop settings</Title>
+          <Group sx={{ alignItems: 'flex-end' }}>
+            <IncrementedNumberInput label='Split into' value={numberOfSplits} setValue={setNumberOfSplits} max={20} min={1} />
+            <InputWrapper label='Aspect ratio'>
+              <Select value={desiredRatio} data={AspectRatios} onChange={val => setDesiredRatio(val ?? '')} />
+              {desiredRatio === 'custom' && (
+                <Group mt={5} spacing={5}>
+                  <NumberInput
+                    value={customRatio.width}
+                    required
+                    icon={<ArrowsHorizontal />}
+                    max={1000}
+                    min={1}
+                    onChange={val => setCustomRatio({ width: val ?? customRatio.width, height: customRatio.height })}
+                  />
+                  <NumberInput
+                    value={customRatio.height}
+                    icon={<ArrowsVertical />}
+                    max={1000}
+                    min={1}
+                    onChange={val => setCustomRatio({ height: val ?? customRatio.height, width: customRatio.width })}
+                  />
+                </Group>
+              )}
+            </InputWrapper>
+          </Group>
         </Collapse>
       </Box>
-      {imgSrc !== undefined && (
-        <Container>
-          <ReactCrop
-            style={{ alignSelf: 'center', justifyContent: 'center', alignItems: 'center' }}
-            crop={crop}
-            onChange={crop => setCrop(crop)}
-            onComplete={setCompletedCrop}
-            aspect={aspect}
-          >
-            <Image ref={imgRef} src={imgSrc} onLoad={onImageLoad} radius='xs' fit='contain' height={500} />
-          </ReactCrop>
-        </Container>
+      {loading ? (
+        <Center sx={{ height: 600 }}>
+          <Loader />
+        </Center>
+      ) : (
+        imgSrc !== undefined && (
+          <Center my='xl'>
+            <ReactCrop
+              keepSelection
+              crop={crop}
+              onChange={(_, percentCrop) => setCrop(percentCrop)}
+              onComplete={(_, percentCrop) => setCompletedCrop(percentCrop)}
+              aspect={aspect}
+              style={{ alignSelf: 'center', margin: 'auto' }}
+            >
+              <Image withPlaceholder={loading} imageProps={{ style: { maxHeight: 600 } }} imageRef={imgRef} src={imgSrc} radius='xs' alt='Your image' />
+            </ReactCrop>
+          </Center>
+        )
       )}
+      <Group position='center'>
+        <Button disabled={!completedCrop}>Preview</Button>
+        <Button disabled={!completedCrop} onClick={() => console.log(completedCrop)}>
+          Confirm
+        </Button>
+      </Group>
     </Container>
   );
 };
@@ -125,6 +184,10 @@ interface AspectRatio extends SelectItem {
 }
 
 const AspectRatios: AspectRatio[] = [
+  {
+    label: 'Free',
+    value: 'free',
+  },
   {
     label: 'Original image',
     value: 'original',
