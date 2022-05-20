@@ -1,10 +1,14 @@
-import { Container, Text, Button, Group, useMantineTheme, Anchor } from '@mantine/core';
+import { Container, Text, Button, Group, useMantineTheme, Anchor, Title, Alert } from '@mantine/core';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { RouteKeys } from '../../App';
 import useStyles from './Hero.styles';
 
-export function HeroTitle() {
+export function Hero() {
   const { classes, cx } = useStyles();
   const theme = useMantineTheme();
+
+  const [showAlert, setShowAlert] = useState(true);
 
   return (
     <div className={classes.wrapper}>
@@ -21,30 +25,38 @@ export function HeroTitle() {
           Split one image into multiple images with a perfect seam to create those amazing panoramas on Instagram.
         </Text>
 
-        <div className={classes.controls}>
-          {process.env.NODE_ENV === 'development' ? (
-            <>
-              <Button component={Link} to='/split' size='xl' className={classes.control} variant='gradient' gradient={{ from: '#f6416c', to: '#f86789' }}>
-                Start splitting
-              </Button>
+        {showAlert && (
+          <Alert my='sm' title='Take note!' color='orange' withCloseButton onClose={() => setShowAlert(false)}>
+            <Text>This app is still early in development. Feel free to try it out, but expect unfinished functionality and bugs</Text>
+          </Alert>
+        )}
 
-              <Button
-                component='a'
-                href='https://github.com/lundeful/instasplit'
-                size='xl'
-                variant='outline'
-                className={cx(classes.control, classes.githubControl)}
-                color={theme.colorScheme === 'dark' ? 'gray' : 'dark'}
-                disabled={true}
-              >
-                GitHub
-              </Button>
-            </>
-          ) : (
-            <Button size='xl' className={classes.control} variant='gradient' gradient={{ from: '#f6416c', to: '#f86789' }}>
-              Coming soon
+        <div className={classes.controls}>
+          <>
+            <Button
+              component={Link}
+              to={RouteKeys.Upload}
+              size='xl'
+              className={classes.control}
+              variant='gradient'
+              gradient={{ from: '#f6416c', to: '#f86789' }}
+            >
+              Start splitting
             </Button>
-          )}
+
+            <Button
+              component='a'
+              // href='https://github.com/lundeful/instasplit'
+              href='https://github.com/lundeful'
+              size='xl'
+              variant='outline'
+              className={cx(classes.control, classes.githubControl)}
+              color={theme.colorScheme === 'dark' ? 'gray' : 'dark'}
+              disabled={true}
+            >
+              GitHub (soon&trade;)
+            </Button>
+          </>
         </div>
       </Container>
     </div>
