@@ -1,6 +1,6 @@
 import 'react-image-crop/dist/ReactCrop.css';
 import { Box, Button, Center, Collapse, Container, Group, Image, InputWrapper, Loader, NumberInput, Select, SelectItem, Title } from '@mantine/core';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactCrop, { Crop, PercentCrop } from 'react-image-crop';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowBackUp, ArrowsHorizontal, ArrowsVertical, Tool } from 'tabler-icons-react';
@@ -64,7 +64,7 @@ export const Splitter = () => {
       setAspect(newRatio.aspect * numberOfSplits);
       return;
     }
-  }, [desiredRatio, numberOfSplits]);
+  }, [desiredRatio, numberOfSplits, customRatio]);
 
   useDidUpdate(() => {
     if (desiredRatio === 'free' || !aspect || !imgRef.current) return;
@@ -86,22 +86,7 @@ export const Splitter = () => {
     setCrop({ width: scaledWidth, height: scaledHeight, x: xCoordinate, y: yCoordinate, unit: 'px' });
   }, [aspect]);
 
-  useDidUpdate(() => {
-    if (desiredRatio === 'custom') {
-      setAspect(customRatio.width / customRatio.height);
-    }
-  }, [customRatio]);
-
-  useEffect(() => {
-    // Return if to FilePicker state was not passed
-    if (!location.state) {
-      navigate(RouteKeys.Upload);
-      return;
-    }
-    loadImageData();
-  }, []);
-
-  const loadImageData = () => {
+  const loadImageData = useCallback(() => {
     const file = location.state as File;
     const reader = new FileReader();
     reader.addEventListener('load', () => {
@@ -109,7 +94,14 @@ export const Splitter = () => {
       setLoading(false);
     });
     reader.readAsDataURL(file);
-  };
+  }, [location.state]);
+
+  useEffect(loadImageData, [loadImageData]);
+
+  // If state was not passed then we GTFO
+  if (!location.state) {
+    navigate(RouteKeys.Upload);
+  }
 
   return (
     <Container>
@@ -172,7 +164,9 @@ export const Splitter = () => {
         )
       )}
       <Group position='center'>
-        <Button disabled>Split (soon&trade;)</Button>
+        <Button disabled onClick={() => console.log(completedCrop)}>
+          Split (soon&trade;)
+        </Button>
         {/* <Button disabled={!completedCrop}>Preview</Button> 
         <Button disabled={!completedCrop} onClick={() => console.log(completedCrop)}>
           Confirm

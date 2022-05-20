@@ -11,9 +11,7 @@ export const Picker = () => {
   const navigate = useNavigate();
 
   const handleFileSelected = async (files: File[]) => {
-    console.log(files[0]);
-
-    if (files) navigate(RouteKeys.Split, { state: files[0] });
+    if (files && files.length > 0) navigate(RouteKeys.Split, { state: files[0] });
   };
 
   return (
