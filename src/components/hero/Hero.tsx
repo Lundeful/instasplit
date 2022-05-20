@@ -1,4 +1,5 @@
-import { createStyles, Container, Text, Button, Group, useMantineTheme } from '@mantine/core';
+import { createStyles, Container, Text, Button, Group, useMantineTheme, Anchor } from '@mantine/core';
+import { Link } from 'react-router-dom';
 
 const BREAKPOINT = '@media (max-width: 755px)';
 
@@ -96,9 +97,11 @@ export function HeroTitle() {
         </Text>
 
         <Group className={classes.controls}>
-          <Button size='xl' className={classes.control} variant='gradient' gradient={{ from: '#f6416c', to: '#f86789' }}>
-            Start splitting
-          </Button>
+          <Anchor component={Link} to='/split'>
+            <Button size='xl' className={classes.control} variant='gradient' gradient={{ from: '#f6416c', to: '#f86789' }}>
+              Start splitting
+            </Button>
+          </Anchor>
 
           <Button
             component='a'
