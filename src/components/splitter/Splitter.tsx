@@ -36,7 +36,8 @@ export const Splitter = () => {
 
     // Custom aspect ratio
     if (desiredRatio === 'custom') {
-      setAspect(customRatio.width / customRatio.height);
+      const aspect = customRatio.width / customRatio.height;
+      setAspect(aspect * numberOfSplits);
       return;
     }
 
@@ -45,7 +46,8 @@ export const Splitter = () => {
       const height = imgRef.current?.height;
       if (!width || !height) return;
 
-      setAspect(width / height);
+      const aspect = width / height;
+      setAspect(aspect * numberOfSplits);
       return;
     }
 
@@ -59,18 +61,18 @@ export const Splitter = () => {
 
     // Pre-defined aspect ratio
     if (newRatio.aspect) {
-      setAspect(newRatio.aspect);
+      setAspect(newRatio.aspect * numberOfSplits);
       return;
     }
-  }, [desiredRatio]);
+  }, [desiredRatio, numberOfSplits]);
 
   useDidUpdate(() => {
     if (desiredRatio === 'free' || !aspect || !imgRef.current) return;
 
     const { width, height } = imgRef.current;
 
-    // We prefer full width crop, so we adjust height based on aspect ratio and number of images
-    const adjustedHeight = width / (aspect * numberOfSplits);
+    // We prefer full width crop, so we adjust height based on aspect ratio
+    const adjustedHeight = width / aspect;
 
     // If height is taller than image then we scale the crop
     const multiplier = adjustedHeight > height ? height / adjustedHeight : 1;
@@ -82,7 +84,7 @@ export const Splitter = () => {
     const yCoordinate = multiplier < 1 ? 0 : (height - adjustedHeight) / 2;
 
     setCrop({ width: scaledWidth, height: scaledHeight, x: xCoordinate, y: yCoordinate, unit: 'px' });
-  }, [aspect, numberOfSplits]);
+  }, [aspect]);
 
   useDidUpdate(() => {
     if (desiredRatio === 'custom') {
@@ -170,10 +172,11 @@ export const Splitter = () => {
         )
       )}
       <Group position='center'>
-        <Button disabled={!completedCrop}>Preview</Button>
+        <Button disabled>Split (soon&trade;)</Button>
+        {/* <Button disabled={!completedCrop}>Preview</Button> 
         <Button disabled={!completedCrop} onClick={() => console.log(completedCrop)}>
           Confirm
-        </Button>
+        </Button> */}
       </Group>
     </Container>
   );
