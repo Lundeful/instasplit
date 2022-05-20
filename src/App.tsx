@@ -5,8 +5,10 @@ import { Header } from './components/header/Header';
 import { HeroTitle } from './components/hero/Hero';
 import { Route, Routes } from 'react-router-dom';
 import { Splitter } from './components/splitter/Splitter';
+import { useEffect } from 'react';
 
 // Primary color #f6416c
+// Background color #1A1B1E
 
 function App() {
   const preferredColorScheme = useColorScheme();
@@ -16,7 +18,13 @@ function App() {
     getInitialValueInEffect: true,
   });
 
-  const toggleColorScheme = (value?: ColorScheme) => setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
+  const toggleColorScheme = (value?: ColorScheme) => {
+    setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
+  };
+
+  useEffect(() => {
+    document.querySelector("meta[name='theme-color']")?.setAttribute('content', colorScheme === 'dark' ? '#1A1B1E' : '#fff');
+  }, [colorScheme]);
 
   return (
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>

@@ -13,7 +13,7 @@ export const Welcome = () => {
         </Text>
       </Title>
       <Text color='dimmed' align='center' size='lg' sx={{ maxWidth: 580 }} mx='auto' mt='xl'>
-        We're in a closed beta. Please check back later
+        Coming soon&trade;
       </Text>
     </Container>
   );

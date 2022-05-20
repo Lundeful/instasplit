@@ -21,7 +21,7 @@ export function HeroTitle() {
           Split one image into multiple images with a perfect seam to create those amazing panoramas on Instagram.
         </Text>
 
-        <div className={classes.controls}>
+        {/* <div className={classes.controls}>
           <Button component={Link} to='/split' size='xl' className={classes.control} variant='gradient' gradient={{ from: '#f6416c', to: '#f86789' }}>
             Start splitting
           </Button>
@@ -35,9 +35,9 @@ export function HeroTitle() {
             color={theme.colorScheme === 'dark' ? 'gray' : 'dark'}
             disabled={true}
           >
-            GitHub
+            GitHub (Soon&trade;)
           </Button>
-        </div>
+        </div> */}
       </Container>
     </div>
   );
