@@ -1,4 +1,4 @@
-import { Title, Text, Anchor, Container } from '@mantine/core';
+import { Title, Text, Container } from '@mantine/core';
 import useStyles from './Welcome.styles';
 
 export const Welcome = () => {
@@ -6,7 +6,7 @@ export const Welcome = () => {
 
   return (
     <Container>
-      <Title className={classes.title} align='center' mt={100}>
+      <Title className={classes.title} align='center' mt={50}>
         Welcome to{' '}
         <Text inherit variant='gradient' component='span' gradient={{ from: '#f6416c', to: '#f86789' }}>
           InstaSplit
