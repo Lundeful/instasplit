@@ -1,8 +1,9 @@
 import { Container, Text, Button, Group, useMantineTheme, Anchor } from '@mantine/core';
 import { Link } from 'react-router-dom';
+import { RouteKeys } from '../../App';
 import useStyles from './Hero.styles';
 
-export function HeroTitle() {
+export function Hero() {
   const { classes, cx } = useStyles();
   const theme = useMantineTheme();
 
@@ -24,7 +25,14 @@ export function HeroTitle() {
         <div className={classes.controls}>
           {process.env.NODE_ENV === 'development' ? (
             <>
-              <Button component={Link} to='/split' size='xl' className={classes.control} variant='gradient' gradient={{ from: '#f6416c', to: '#f86789' }}>
+              <Button
+                component={Link}
+                to={RouteKeys.Upload}
+                size='xl'
+                className={classes.control}
+                variant='gradient'
+                gradient={{ from: '#f6416c', to: '#f86789' }}
+              >
                 Start splitting
               </Button>
 

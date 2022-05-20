@@ -1,22 +1,27 @@
 import { Container, Group, MantineTheme, Text, useMantineTheme } from '@mantine/core';
 import { Dropzone, DropzoneStatus, IMAGE_MIME_TYPE } from '@mantine/dropzone';
-import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Icon, Photo, Upload, X } from 'tabler-icons-react';
+import { RouteKeys } from '../../App';
 
-export const FilePicker = () => {
+const IMAGE_SIZE_IN_MB = 30;
+
+export const Picker = () => {
   const theme = useMantineTheme();
-  const [selectedFile, setSelectedFile] = useState<File>();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log(selectedFile);
-  }, [selectedFile]);
+  const handleFileSelected = async (files: File[]) => {
+    console.log(files[0]);
+
+    if (files) navigate(RouteKeys.Split, { state: files[0] });
+  };
 
   return (
-    <Container>
+    <Container mt={50}>
       <Dropzone
-        onDrop={files => setSelectedFile(files[0])}
+        onDrop={handleFileSelected}
         onReject={files => console.log('rejected files', files)}
-        maxSize={3 * 1024 ** 2}
+        maxSize={IMAGE_SIZE_IN_MB * 1024 ** 2}
         accept={IMAGE_MIME_TYPE}
         multiple={false}
       >
@@ -32,12 +37,12 @@ const dropZoneContent = (status: DropzoneStatus, theme: MantineTheme) => {
       <ImageUploadIcon status={status} style={{ color: getIconColor(status, theme) }} size={80} />
 
       <div>
-        <Text size='xl' inline>
-          Drag image here or click to select file
+        <Text size='xl' inline align='center'>
+          Drag image or click to upload
         </Text>
-        {/* <Text size='sm' color='dimmed' inline mt={7}>
-          Attach as many files as you like, each file should not exceed 5mb
-        </Text> */}
+        <Text size='sm' color='dimmed' inline mt={7} align='center'>
+          File size should not exceed {IMAGE_SIZE_IN_MB} MB.
+        </Text>
       </div>
     </Group>
   );
