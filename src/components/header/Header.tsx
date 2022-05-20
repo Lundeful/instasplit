@@ -1,14 +1,15 @@
-import { ActionIcon, Anchor, Container, createStyles, Header as MantineHeader, Image, Text, useMantineColorScheme } from '@mantine/core';
+import { ActionIcon, Anchor, Container, Header as MantineHeader, Image, useMantineColorScheme } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import { MoonStars, Sun } from 'tabler-icons-react';
-import Logo from '../assets/instasplit-logo.svg';
+import Logo from '../../assets/instasplit-logo.svg';
+import useStyles from './Header.styles';
 
 const HEADER_HEIGHT = 60;
 
 export const Header = () => {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const dark = colorScheme === 'dark';
-  const { classes, cx } = useStyles();
+  const { classes } = useStyles();
 
   return (
     <MantineHeader height={HEADER_HEIGHT}>
@@ -23,12 +24,3 @@ export const Header = () => {
     </MantineHeader>
   );
 };
-
-const useStyles = createStyles(theme => ({
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: '100%',
-  },
-}));

@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
-import ReactCrop, { Crop, PercentCrop, PixelCrop } from 'react-image-crop';
-
+import { useRef, useState } from 'react';
+import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
+// import useStyles from './Splitter.styles';
 
 export const Splitter = () => {
+  // const { classes } = useStyles();
+
   // Image state
   const [loading, setLoading] = useState(true);
   const [imgSrc, setImgSrc] = useState('');

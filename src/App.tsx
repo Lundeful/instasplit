@@ -1,8 +1,8 @@
 import './App.css';
-import { ColorScheme, ColorSchemeProvider, Container, MantineProvider, Text, Title } from '@mantine/core';
+import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core';
 import { useColorScheme, useLocalStorage } from '@mantine/hooks';
-import { Header } from './layout/Header';
-import { Welcome } from './components/welcome/Welcome';
+import { Header } from './components/header/Header';
+import { HeroTitle } from './components/hero/Hero';
 
 // Primary color #f6416c
 
@@ -20,7 +20,7 @@ function App() {
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
       <MantineProvider theme={{ colorScheme }} withGlobalStyles withNormalizeCSS>
         <Header />
-        <Welcome />
+        <HeroTitle />
       </MantineProvider>
     </ColorSchemeProvider>
   );
