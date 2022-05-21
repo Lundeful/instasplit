@@ -1,6 +1,8 @@
 import { PixelCrop } from 'react-image-crop';
 
 export const getCroppedImages = (image: HTMLImageElement, numberOfSplits: number, crop: PixelCrop, mimeType: string): string[] => {
+  const croppedImages: string[] = [];
+
   if (crop.unit !== 'px') {
     console.error("Crop unit was not in 'px'");
     throw new Error('Error while cropping image');
@@ -13,37 +15,27 @@ export const getCroppedImages = (image: HTMLImageElement, numberOfSplits: number
     throw new Error('Error while cropping image');
   }
 
-  canvas.hidden = true;
-  ctx.imageSmoothingQuality = 'high';
-
   const scaleX = image.naturalWidth / image.width;
   const scaleY = image.naturalHeight / image.height;
 
-  const cropX = crop.x * scaleX;
-  const cropY = crop.y * scaleY;
+  const outputWidth = (crop.width * scaleX) / numberOfSplits;
+  const outputHeight = crop.height * scaleY;
 
-  const outputX = crop.width * scaleX;
-  const outputY = crop.height * scaleY;
+  canvas.width = outputWidth;
+  canvas.height = outputHeight;
 
-  console.log('cropX', cropX);
-  console.log('cropY', cropY);
+  ctx.imageSmoothingQuality = 'high';
+  ctx.save();
 
-  const centerX = image.naturalWidth / 2;
-  const centerY = image.naturalHeight / 2;
+  for (let i = 0; i < numberOfSplits; i++) {
+    const cropX = crop.x * scaleX + outputWidth * i;
+    const cropY = crop.y * scaleY;
 
-  canvas.width = outputX;
-  canvas.height = outputY;
+    ctx.drawImage(image, -cropX, -cropY);
+    croppedImages.push(canvas.toDataURL(mimeType, 1));
+    ctx.restore();
+  }
 
-  // Move the crop origin to the canvas origin (0,0)
-  ctx.translate(-cropX, -cropY);
-  // Move the origin to the center of the original position
-  ctx.translate(centerX, centerY);
-  // Move the center of the image to the origin (0,0)
-  ctx.translate(-centerX, -centerY);
-
-  ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight, 0, 0, image.naturalWidth, image.naturalHeight);
-
-  const croppedImageData = canvas.toDataURL(mimeType, 1);
   canvas.remove();
-  return [croppedImageData];
+  return croppedImages;
 };

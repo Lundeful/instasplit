@@ -44,7 +44,7 @@ export function Hero() {
               Start splitting
             </Button>
 
-            {/* <Button
+            <Button
               component={Link}
               to={RouteKeys.Home}
               size='xl'
@@ -53,7 +53,7 @@ export function Hero() {
               color={theme.colorScheme === 'dark' ? 'gray' : 'dark'}
             >
               How to use (soon&trade;)
-            </Button> */}
+            </Button>
             {/* <Button
               component='a'
               // href='https://github.com/lundeful/instasplit'

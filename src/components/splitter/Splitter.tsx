@@ -13,13 +13,12 @@ import {
   Loader,
   NumberInput,
   Select,
-  Title,
   useMantineTheme,
 } from '@mantine/core';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowBackUp, ArrowsHorizontal, ArrowsVertical, Crop as CropIcon, Tool, X } from 'tabler-icons-react';
+import { ArrowBackUp, ArrowsHorizontal, ArrowsVertical, Crop as CropIcon, X } from 'tabler-icons-react';
 import { RouteKeys } from '../../App';
 import { IncrementedNumberInput } from '../formcomponents/IncrementedNumberInput';
 import { useDidUpdate } from '@mantine/hooks';
@@ -93,7 +92,7 @@ export const Splitter = () => {
       const originalFileName = file.name.split('.');
       originalFileName.pop();
       const images = getCroppedImages(imgRef.current, numberOfSplits, completedCrop as PixelCrop, file.type);
-      images.forEach((image, i) => downloadFile(image, `${originalFileName}_${i + 1}`));
+      images.forEach((image, i) => downloadFile(image, `${originalFileName}-instasplit-${i + 1}`));
     } catch (e) {
       console.error(e);
       // TODO: Display error message to user
@@ -146,34 +145,29 @@ export const Splitter = () => {
           </Group>
         </Collapse>
       </Box>
-      {loading ? (
-        <Center sx={{ height: 600 }}>
-          <Loader />
+      {!!imgSrc && (
+        <Center my='xl'>
+          <ReactCrop
+            renderSelectionAddon={() => (showPreviewLines ? <PreviewLines numberOfSplits={numberOfSplits} /> : null)}
+            keepSelection
+            crop={crop}
+            onChange={(pixelCrop, percentCrop) => setCrop(pixelCrop)}
+            onComplete={(pixelCrop, percentCrop) => setCompletedCrop(pixelCrop)}
+            aspect={aspect}
+            style={{ alignSelf: 'center', margin: 'auto' }}
+          >
+            <Image
+              imageProps={{ style: { maxHeight: 600 } }}
+              imageRef={imgRef}
+              src={imgSrc}
+              radius='xs'
+              alt='Your image'
+              onLoad={() => setDesiredRatio('original')}
+              withPlaceholder={loading}
+              placeholder={<Loader />}
+            />
+          </ReactCrop>
         </Center>
-      ) : (
-        imgSrc !== undefined && (
-          <Center my='xl'>
-            <ReactCrop
-              renderSelectionAddon={() => (showPreviewLines ? <PreviewLines numberOfSplits={numberOfSplits} /> : null)}
-              keepSelection
-              crop={crop}
-              onChange={(pixelCrop, percentCrop) => setCrop(pixelCrop)}
-              onComplete={(pixelCrop, percentCrop) => setCompletedCrop(pixelCrop)}
-              aspect={aspect}
-              style={{ alignSelf: 'center', margin: 'auto' }}
-            >
-              <Image
-                withPlaceholder={loading}
-                imageProps={{ style: { maxHeight: 600 } }}
-                imageRef={imgRef}
-                src={imgSrc}
-                radius='xs'
-                alt='Your image'
-                onLoad={() => setDesiredRatio('original')}
-              />
-            </ReactCrop>
-          </Center>
-        )
       )}
     </Container>
   );
