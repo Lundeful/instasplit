@@ -6,6 +6,7 @@ import { Splitter } from './components/splitter/Splitter';
 import { useEffect } from 'react';
 import { Picker } from './components/picker/Picker';
 import { WithLayout } from './components/Layout';
+import { NotFound } from './components/notfound/NotFound';
 
 // Primary color #f6416c
 // Background color #1A1B1E
@@ -14,6 +15,7 @@ export enum RouteKeys {
   Home = '/',
   Upload = '/upload',
   Split = '/split',
+  NotFound = '*',
 }
 
 function App() {
@@ -40,6 +42,7 @@ function App() {
             <Route path={RouteKeys.Home} element={<Hero />} />
             <Route path={RouteKeys.Upload} element={<Picker />} />
             <Route path={RouteKeys.Split} element={<Splitter />} />
+            <Route path={RouteKeys.NotFound} element={<NotFound />} />
           </Routes>
         </WithLayout>
       </MantineProvider>

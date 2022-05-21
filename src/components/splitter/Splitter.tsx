@@ -14,15 +14,13 @@ import {
   NumberInput,
   Select,
   SelectItem,
-  Switch,
-  Text,
   Title,
   useMantineTheme,
 } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ReactCrop, { Crop, PercentCrop } from 'react-image-crop';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { AlignRight, ArrowBackUp, ArrowsHorizontal, ArrowsVertical, Tool, X } from 'tabler-icons-react';
+import { ArrowBackUp, ArrowsHorizontal, ArrowsVertical, Tool, X } from 'tabler-icons-react';
 import { RouteKeys } from '../../App';
 import { IncrementedNumberInput } from '../formcomponents/IncrementedNumberInput';
 import { useDidUpdate } from '@mantine/hooks';
