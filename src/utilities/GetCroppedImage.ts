@@ -1,4 +1,4 @@
-import { Crop, PercentCrop, PixelCrop } from 'react-image-crop';
+import { PixelCrop } from 'react-image-crop';
 
 export const getCroppedImages = (image: HTMLImageElement, numberOfSplits: number, crop: PixelCrop, mimeType: string): string[] => {
   if (process.env.NODE_ENV === 'development') {
@@ -49,8 +49,7 @@ export const getCroppedImages = (image: HTMLImageElement, numberOfSplits: number
 
   ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight, 0, 0, image.naturalWidth, image.naturalHeight);
 
-  const fileType = image.src.split(';').shift()?.split('/').pop();
-  const croppedImageData = canvas.toDataURL();
+  const croppedImageData = canvas.toDataURL(mimeType, 1);
   canvas.remove();
   return [croppedImageData];
 };

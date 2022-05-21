@@ -24,8 +24,11 @@ import { RouteKeys } from '../../App';
 import { IncrementedNumberInput } from '../formcomponents/IncrementedNumberInput';
 import { useDidUpdate } from '@mantine/hooks';
 import useStyles from './Splitter.styles';
-import { getCroppedImages } from '../../utilities/GetCroppedImage';
 import { AspectRatios } from './types';
+import { downloadFile } from '../../utilities/downloadFile';
+import { getCrop } from '../../utilities/getCrop';
+import { getAspectRatio } from '../../utilities/getAspectRatio';
+import { getCroppedImages } from '../../utilities/getCroppedImage';
 
 export const Splitter = () => {
   const theme = useMantineTheme();
@@ -38,7 +41,6 @@ export const Splitter = () => {
 
   // Image and crop state
   const imgRef = useRef<HTMLImageElement>(null);
-  const canvasPreviewRef = useRef<HTMLCanvasElement>(null);
   const [imgSrc, setImgSrc] = useState<string>('');
   const [crop, setCrop] = useState<Crop>({ width: 100, height: 50, x: 0, y: 25, unit: '%' });
   const [completedCrop, setCompletedCrop] = useState<Crop>();
@@ -52,62 +54,13 @@ export const Splitter = () => {
   const [customRatio, setCustomRatio] = useState<{ width: number; height: number }>({ width: 1, height: 1 });
 
   useEffect(() => {
-    // Free aspect ratio
-    if (!desiredRatio || desiredRatio === 'free') {
-      setAspect(undefined);
-      return;
-    }
-
-    // Custom aspect ratio
-    if (desiredRatio === 'custom') {
-      const aspect = customRatio.width / customRatio.height;
-      setAspect(aspect * numberOfSplits);
-      return;
-    }
-
-    if (desiredRatio === 'original') {
-      const width = imgRef.current?.width;
-      const height = imgRef.current?.height;
-      if (!width || !height) return;
-
-      const aspect = width / height;
-      setAspect(aspect * numberOfSplits);
-      return;
-    }
-
-    // Use pre-defined aspect ratio
-    const newRatio = AspectRatios.find(ar => ar.value === desiredRatio);
-    // Couldn't find aspect ratio
-    if (!newRatio) {
-      setAspect(undefined);
-      return;
-    }
-
-    // Pre-defined aspect ratio
-    if (newRatio.aspect) {
-      setAspect(newRatio.aspect * numberOfSplits);
-      return;
-    }
+    setAspect(getAspectRatio(desiredRatio, numberOfSplits, customRatio, imgRef.current?.width, imgRef.current?.height));
   }, [desiredRatio, numberOfSplits, customRatio]);
 
   useDidUpdate(() => {
     if (desiredRatio === 'free' || !aspect || !imgRef.current) return;
-
     const { width, height } = imgRef.current;
-
-    // We prefer full width crop, so we adjust height based on aspect ratio
-    const adjustedHeight = width / aspect;
-
-    // If height is taller than image then we scale the crop
-    const multiplier = adjustedHeight > height ? height / adjustedHeight : 1;
-    const scaledHeight = adjustedHeight * multiplier;
-    const scaledWidth = width * multiplier;
-
-    // Place crop in center
-    const xCoordinate = multiplier < 1 ? (width - scaledWidth) / 2 : 0;
-    const yCoordinate = multiplier < 1 ? 0 : (height - adjustedHeight) / 2;
-
-    const crop: PixelCrop = { width: scaledWidth, height: scaledHeight, x: xCoordinate, y: yCoordinate, unit: 'px' };
+    const crop = getCrop(width, height, aspect);
     setCrop(crop);
     setCompletedCrop(crop);
   }, [aspect]);
@@ -138,11 +91,12 @@ export const Splitter = () => {
           ))}
         </Box>
       );
-    }, [numberOfSplits]);
+    }, []);
 
   const handleSubmit = () => {
-    if (!completedCrop || !imgRef.current || !canvasPreviewRef.current) {
+    if (!completedCrop || !imgRef.current) {
       // Todo: Display error message to user
+      console.error('Missing image reference or completed crop');
       return;
     }
 
@@ -151,23 +105,11 @@ export const Splitter = () => {
       const originalFileName = file.name.split('.');
       originalFileName.pop();
       const images = getCroppedImages(imgRef.current, numberOfSplits, completedCrop as PixelCrop, file.type);
-      images.forEach((image, i) => download(image, `${originalFileName}_${i + 1}`));
+      images.forEach((image, i) => downloadFile(image, `${originalFileName}_${i + 1}`));
     } catch (e) {
       console.error(e);
       // TODO: Display error message to user
     }
-  };
-
-  // Temporarily create a link to trigger download
-  // This hack is required because of bad browser support for the cool solutions
-  const download = (croppedImage: string, fileName: string = 'instasplit') => {
-    const a = document.createElement('a');
-    a.href = croppedImage;
-    const fileType = croppedImage.split(';').shift()?.split('/').pop() ?? 'jpg';
-    a.download = `${fileName}.${fileType}`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
   };
 
   return (
@@ -209,9 +151,7 @@ export const Splitter = () => {
                     min={1}
                     onChange={val => setCustomRatio({ height: val ?? customRatio.height, width: customRatio.width })}
                   />
-                  <ActionIcon color={theme.primaryColor} variant='filled' size='lg' onClick={() => setDesiredRatio('free')}>
-                    <X />
-                  </ActionIcon>
+                  <ActionIcon children={<X />} color={theme.primaryColor} variant='filled' size='lg' onClick={() => setDesiredRatio('free')} />
                 </Group>
               ) : (
                 <Select value={desiredRatio} data={AspectRatios} onChange={val => setDesiredRatio(val ?? '')} />
@@ -255,13 +195,6 @@ export const Splitter = () => {
           Confirm split
         </Button>
       </Group>
-      <canvas
-        ref={canvasPreviewRef}
-        // style={{
-        //   maxWidth: completedCrop?.width,
-        //   maxHeight: completedCrop?.height,
-        // }}
-      />
     </Container>
   );
 };
