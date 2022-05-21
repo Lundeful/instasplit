@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { Picker } from './components/picker/Picker';
 import { WithLayout } from './components/Layout';
 import { NotFound } from './components/notfound/NotFound';
+import { NotificationsProvider } from '@mantine/notifications';
 
 // Primary color #f6416c
 // Background color #1A1B1E
@@ -37,14 +38,16 @@ function App() {
   return (
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
       <MantineProvider theme={{ colorScheme, primaryColor: 'pink' }} withGlobalStyles withNormalizeCSS>
-        <WithLayout>
-          <Routes>
-            <Route path={RouteKeys.Home} element={<Hero />} />
-            <Route path={RouteKeys.Upload} element={<Picker />} />
-            <Route path={RouteKeys.Split} element={<Splitter />} />
-            <Route path={RouteKeys.NotFound} element={<NotFound />} />
-          </Routes>
-        </WithLayout>
+        <NotificationsProvider autoClose={6000}>
+          <WithLayout>
+            <Routes>
+              <Route path={RouteKeys.Home} element={<Hero />} />
+              <Route path={RouteKeys.Upload} element={<Picker />} />
+              <Route path={RouteKeys.Split} element={<Splitter />} />
+              <Route path={RouteKeys.NotFound} element={<NotFound />} />
+            </Routes>
+          </WithLayout>
+        </NotificationsProvider>
       </MantineProvider>
     </ColorSchemeProvider>
   );

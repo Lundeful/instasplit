@@ -1,4 +1,5 @@
 import { Container, Text, Button, useMantineTheme, Alert } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { RouteKeys } from '../../App';
@@ -25,12 +26,6 @@ export function Hero() {
           Split one image into multiple images with a perfect seam to create those amazing panoramas on Instagram.
         </Text>
 
-        {showAlert && (
-          <Alert my='sm' title='Take note!' color='orange' withCloseButton onClose={() => setShowAlert(false)}>
-            <Text>This app is still early in development. Feel free to try it out, but expect unfinished functionality and bugs</Text>
-          </Alert>
-        )}
-
         <div className={classes.controls}>
           <>
             <Button
@@ -51,6 +46,14 @@ export function Hero() {
               variant='outline'
               className={cx(classes.control, classes.howToControl)}
               color={theme.colorScheme === 'dark' ? 'gray' : 'dark'}
+              onClick={() =>
+                showNotification({
+                  title: 'What are you doing?',
+                  message: 'The button said soon. Be patient and check back later',
+                  icon: '🤨',
+                  color: '#fff',
+                })
+              }
             >
               How to use (soon&trade;)
             </Button>
