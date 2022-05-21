@@ -1,9 +1,6 @@
 import { createStyles } from '@mantine/core';
 
 const useStyles = createStyles(theme => ({
-  container: {
-    marginTop: 50,
-  },
   previewLinesContainer: {
     width: '100%',
     height: '100%',

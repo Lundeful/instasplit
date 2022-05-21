@@ -16,23 +16,22 @@ import {
   Title,
   useMantineTheme,
 } from '@mantine/core';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowBackUp, ArrowsHorizontal, ArrowsVertical, Tool, X } from 'tabler-icons-react';
 import { RouteKeys } from '../../App';
 import { IncrementedNumberInput } from '../formcomponents/IncrementedNumberInput';
 import { useDidUpdate } from '@mantine/hooks';
-import useStyles from './Splitter.styles';
 import { AspectRatios } from './types';
 import { downloadFile } from '../../utilities/downloadFile';
 import { getCrop } from '../../utilities/getCrop';
 import { getAspectRatio } from '../../utilities/getAspectRatio';
 import { getCroppedImages } from '../../utilities/getCroppedImage';
+import { PreviewLines } from './PreviewLines';
 
 export const Splitter = () => {
   const theme = useMantineTheme();
-  const { classes } = useStyles();
 
   // Route state
   const [loading, setLoading] = useState(true);
@@ -66,32 +65,21 @@ export const Splitter = () => {
   }, [aspect]);
 
   const loadImageData = useCallback(() => {
+    // If state was not passed then we GTFO
+    if (!location.state) {
+      navigate(RouteKeys.Upload);
+    }
     const file = location.state as File;
     const reader = new FileReader();
     reader.addEventListener('load', () => {
       setImgSrc(reader.result?.toString() || '');
       setLoading(false);
     });
+
     reader.readAsDataURL(file);
-  }, [location.state]);
+  }, [location.state, navigate]);
 
   useEffect(loadImageData, [loadImageData]);
-
-  // If state was not passed then we GTFO
-  if (!location.state) {
-    navigate(RouteKeys.Upload);
-  }
-
-  const PreviewLines = () =>
-    useMemo(() => {
-      return (
-        <Box className={classes.previewLinesContainer}>
-          {[...Array(numberOfSplits - 1)].map((e, i) => (
-            <Box key={i} className={classes.previewLine} />
-          ))}
-        </Box>
-      );
-    }, []);
 
   const handleSubmit = () => {
     if (!completedCrop || !imgRef.current) {
@@ -168,7 +156,7 @@ export const Splitter = () => {
         imgSrc !== undefined && (
           <Center my='xl'>
             <ReactCrop
-              renderSelectionAddon={() => (showPreviewLines ? <PreviewLines /> : null)}
+              renderSelectionAddon={() => (showPreviewLines ? <PreviewLines numberOfSplits={numberOfSplits} /> : null)}
               keepSelection
               crop={crop}
               onChange={(pixelCrop, percentCrop) => setCrop(pixelCrop)}

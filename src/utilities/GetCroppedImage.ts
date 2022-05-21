@@ -1,22 +1,16 @@
 import { PixelCrop } from 'react-image-crop';
 
 export const getCroppedImages = (image: HTMLImageElement, numberOfSplits: number, crop: PixelCrop, mimeType: string): string[] => {
-  if (process.env.NODE_ENV === 'development') {
-    console.log('image', image);
-    console.log('crop', crop);
-  }
-
   if (crop.unit !== 'px') {
     console.error("Crop unit was not in 'px'");
-    throw new Error('Error while cropping image, see logs for more details');
+    throw new Error('Error while cropping image');
   }
 
   const canvas = document.createElement('canvas');
-
   const ctx = canvas.getContext('2d');
   if (!ctx) {
     console.error("Couldn't get 2d context");
-    throw new Error('Error while cropping image, see logs for more details');
+    throw new Error('Error while cropping image');
   }
 
   canvas.hidden = true;
