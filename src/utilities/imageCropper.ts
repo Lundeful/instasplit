@@ -1,6 +1,6 @@
 import { PixelCrop } from 'react-image-crop';
 
-export const lol = (image: HTMLImageElement, numberOfSplits: number, crop: PixelCrop, mimeType: string): string[] => {
+export const getCroppedImages = (image: HTMLImageElement, numberOfSplits: number, crop: PixelCrop, mimeType: string): string[] => {
   const croppedImages: string[] = [];
 
   if (crop.unit !== 'px') {

@@ -26,8 +26,8 @@ import { AspectRatios } from './types';
 import { downloadFile } from '../../utilities/downloadFile';
 import { getCrop } from '../../utilities/getCrop';
 import { getAspectRatio } from '../../utilities/getAspectRatio';
-import { getCroppedImages } from '../../utilities/getCroppedImage';
 import { PreviewLines } from './PreviewLines';
+import { getCroppedImages } from '../../utilities/imageCropper';
 
 export const Splitter = () => {
   const theme = useMantineTheme();
