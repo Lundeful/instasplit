@@ -19,7 +19,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowBackUp, ArrowsHorizontal, ArrowsVertical, Tool, X } from 'tabler-icons-react';
+import { ArrowBackUp, ArrowsHorizontal, ArrowsVertical, Crop as CropIcon, Tool, X } from 'tabler-icons-react';
 import { RouteKeys } from '../../App';
 import { IncrementedNumberInput } from '../formcomponents/IncrementedNumberInput';
 import { useDidUpdate } from '@mantine/hooks';
@@ -103,48 +103,46 @@ export const Splitter = () => {
   return (
     <Container>
       <Box mb='sm'>
-        <Group spacing='md' my='xs' position='apart'>
-          <Button variant='light' leftIcon={<ArrowBackUp />} component={Link} to={RouteKeys.Upload}>
-            Back
-          </Button>
-          <Button variant='light' leftIcon={<Tool />} onClick={() => setShowTools(!showTools)}>
-            Crop Settings
-          </Button>
+        <Group my='xs' position='apart'>
+          <Button variant='light' leftIcon={<ArrowBackUp />} component={Link} to={RouteKeys.Upload} />
+          <Button variant='light' leftIcon={<CropIcon />} onClick={() => setShowTools(!showTools)} children='Settings' />
+          <Button disabled={!completedCrop} onClick={handleSubmit} children='Split' />
         </Group>
         <Collapse in={showTools}>
-          <Title order={3}>Crop settings</Title>
-          <Group sx={{ alignItems: 'flex-start' }} spacing='xl'>
-            <IncrementedNumberInput label='Split into' value={numberOfSplits} setValue={setNumberOfSplits} max={20} min={1} />
+          <Group direction='column' align='center'>
+            <Group sx={{ alignItems: 'flex-start' }} spacing='xl'>
+              <IncrementedNumberInput label='Split into' value={numberOfSplits} setValue={setNumberOfSplits} max={20} min={1} />
 
-            <InputWrapper label='Preview lines' sx={{}}>
-              <Checkbox size='xl' checked={showPreviewLines} onChange={event => setShowPreviewLines(event.currentTarget.checked)} />
-            </InputWrapper>
-            <InputWrapper label='Aspect ratio'>
-              {desiredRatio === 'custom' ? (
-                <Group spacing={5}>
-                  <NumberInput
-                    sx={{ maxWidth: 100 }}
-                    value={customRatio.width}
-                    required
-                    icon={<ArrowsHorizontal />}
-                    max={1000}
-                    min={1}
-                    onChange={val => setCustomRatio({ width: val ?? customRatio.width, height: customRatio.height })}
-                  />
-                  <NumberInput
-                    sx={{ maxWidth: 100 }}
-                    value={customRatio.height}
-                    icon={<ArrowsVertical />}
-                    max={1000}
-                    min={1}
-                    onChange={val => setCustomRatio({ height: val ?? customRatio.height, width: customRatio.width })}
-                  />
-                  <ActionIcon children={<X />} color={theme.primaryColor} variant='filled' size='lg' onClick={() => setDesiredRatio('free')} />
-                </Group>
-              ) : (
-                <Select value={desiredRatio} data={AspectRatios} onChange={val => setDesiredRatio(val ?? '')} />
-              )}
-            </InputWrapper>
+              <InputWrapper label='Preview lines' sx={{}}>
+                <Checkbox size='xl' checked={showPreviewLines} onChange={event => setShowPreviewLines(event.currentTarget.checked)} />
+              </InputWrapper>
+              <InputWrapper label='Aspect ratio'>
+                {desiredRatio === 'custom' ? (
+                  <Group spacing={5}>
+                    <NumberInput
+                      sx={{ maxWidth: 100 }}
+                      value={customRatio.width}
+                      required
+                      icon={<ArrowsHorizontal />}
+                      max={1000}
+                      min={1}
+                      onChange={val => setCustomRatio({ width: val ?? customRatio.width, height: customRatio.height })}
+                    />
+                    <NumberInput
+                      sx={{ maxWidth: 100 }}
+                      value={customRatio.height}
+                      icon={<ArrowsVertical />}
+                      max={1000}
+                      min={1}
+                      onChange={val => setCustomRatio({ height: val ?? customRatio.height, width: customRatio.width })}
+                    />
+                    <ActionIcon children={<X />} color={theme.primaryColor} variant='filled' size='lg' onClick={() => setDesiredRatio('free')} />
+                  </Group>
+                ) : (
+                  <Select value={desiredRatio} data={AspectRatios} onChange={val => setDesiredRatio(val ?? '')} />
+                )}
+              </InputWrapper>
+            </Group>
           </Group>
         </Collapse>
       </Box>
@@ -177,12 +175,6 @@ export const Splitter = () => {
           </Center>
         )
       )}
-      <Group position='center'>
-        <Button disabled={!completedCrop || true}>Preview (soon&trade;)</Button>
-        <Button disabled={!completedCrop} onClick={handleSubmit}>
-          Confirm split
-        </Button>
-      </Group>
     </Container>
   );
 };
