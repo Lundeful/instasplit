@@ -13,18 +13,19 @@ import {
   Loader,
   NumberInput,
   Select,
-  SelectItem,
   Title,
   useMantineTheme,
 } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import ReactCrop, { Crop, PercentCrop } from 'react-image-crop';
+import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowBackUp, ArrowsHorizontal, ArrowsVertical, Tool, X } from 'tabler-icons-react';
 import { RouteKeys } from '../../App';
 import { IncrementedNumberInput } from '../formcomponents/IncrementedNumberInput';
 import { useDidUpdate } from '@mantine/hooks';
 import useStyles from './Splitter.styles';
+import { getCroppedImages } from '../../utilities/GetCroppedImage';
+import { AspectRatios } from './types';
 
 export const Splitter = () => {
   const theme = useMantineTheme();
@@ -37,9 +38,10 @@ export const Splitter = () => {
 
   // Image and crop state
   const imgRef = useRef<HTMLImageElement>(null);
+  const canvasPreviewRef = useRef<HTMLCanvasElement>(null);
   const [imgSrc, setImgSrc] = useState<string>('');
   const [crop, setCrop] = useState<Crop>({ width: 100, height: 50, x: 0, y: 25, unit: '%' });
-  const [completedCrop, setCompletedCrop] = useState<PercentCrop>();
+  const [completedCrop, setCompletedCrop] = useState<Crop>();
   const [aspect, setAspect] = useState<number | undefined>();
 
   // Crop tools state
@@ -105,7 +107,9 @@ export const Splitter = () => {
     const xCoordinate = multiplier < 1 ? (width - scaledWidth) / 2 : 0;
     const yCoordinate = multiplier < 1 ? 0 : (height - adjustedHeight) / 2;
 
-    setCrop({ width: scaledWidth, height: scaledHeight, x: xCoordinate, y: yCoordinate, unit: 'px' });
+    const crop: PixelCrop = { width: scaledWidth, height: scaledHeight, x: xCoordinate, y: yCoordinate, unit: 'px' };
+    setCrop(crop);
+    setCompletedCrop(crop);
   }, [aspect]);
 
   const loadImageData = useCallback(() => {
@@ -130,11 +134,41 @@ export const Splitter = () => {
       return (
         <Box className={classes.previewLinesContainer}>
           {[...Array(numberOfSplits - 1)].map((e, i) => (
-            <Box className={classes.previewLine} />
+            <Box key={i} className={classes.previewLine} />
           ))}
         </Box>
       );
     }, [numberOfSplits]);
+
+  const handleSubmit = () => {
+    if (!completedCrop || !imgRef.current || !canvasPreviewRef.current) {
+      // Todo: Display error message to user
+      return;
+    }
+
+    try {
+      const file = location.state as File;
+      const originalFileName = file.name.split('.');
+      originalFileName.pop();
+      const images = getCroppedImages(imgRef.current, numberOfSplits, completedCrop as PixelCrop, file.type);
+      images.forEach((image, i) => download(image, `${originalFileName}_${i + 1}`));
+    } catch (e) {
+      console.error(e);
+      // TODO: Display error message to user
+    }
+  };
+
+  // Temporarily create a link to trigger download
+  // This hack is required because of bad browser support for the cool solutions
+  const download = (croppedImage: string, fileName: string = 'instasplit') => {
+    const a = document.createElement('a');
+    a.href = croppedImage;
+    const fileType = croppedImage.split(';').shift()?.split('/').pop() ?? 'jpg';
+    a.download = `${fileName}.${fileType}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
   return (
     <Container>
@@ -159,7 +193,7 @@ export const Splitter = () => {
               {desiredRatio === 'custom' ? (
                 <Group spacing={5}>
                   <NumberInput
-                    sx={{ maxWidth: 120 }}
+                    sx={{ maxWidth: 100 }}
                     value={customRatio.width}
                     required
                     icon={<ArrowsHorizontal />}
@@ -168,7 +202,7 @@ export const Splitter = () => {
                     onChange={val => setCustomRatio({ width: val ?? customRatio.width, height: customRatio.height })}
                   />
                   <NumberInput
-                    sx={{ maxWidth: 120 }}
+                    sx={{ maxWidth: 100 }}
                     value={customRatio.height}
                     icon={<ArrowsVertical />}
                     max={1000}
@@ -197,54 +231,37 @@ export const Splitter = () => {
               renderSelectionAddon={() => (showPreviewLines ? <PreviewLines /> : null)}
               keepSelection
               crop={crop}
-              onChange={(_, percentCrop) => setCrop(percentCrop)}
-              onComplete={(_, percentCrop) => setCompletedCrop(percentCrop)}
+              onChange={(pixelCrop, percentCrop) => setCrop(pixelCrop)}
+              onComplete={(pixelCrop, percentCrop) => setCompletedCrop(pixelCrop)}
               aspect={aspect}
               style={{ alignSelf: 'center', margin: 'auto' }}
             >
-              <Image withPlaceholder={loading} imageProps={{ style: { maxHeight: 600 } }} imageRef={imgRef} src={imgSrc} radius='xs' alt='Your image' />
+              <Image
+                withPlaceholder={loading}
+                imageProps={{ style: { maxHeight: 600 } }}
+                imageRef={imgRef}
+                src={imgSrc}
+                radius='xs'
+                alt='Your image'
+                onLoad={() => setDesiredRatio('original')}
+              />
             </ReactCrop>
           </Center>
         )
       )}
       <Group position='center'>
-        <Button disabled onClick={() => console.log(completedCrop)}>
-          Split (soon&trade;, working out some bugs)
+        <Button disabled={!completedCrop || true}>Preview (soon&trade;)</Button>
+        <Button disabled={!completedCrop} onClick={handleSubmit}>
+          Confirm split
         </Button>
-        {/* <Button disabled={!completedCrop}>Preview</Button> 
-        <Button disabled={!completedCrop} onClick={() => console.log(completedCrop)}>
-          Confirm
-        </Button> */}
       </Group>
+      <canvas
+        ref={canvasPreviewRef}
+        // style={{
+        //   maxWidth: completedCrop?.width,
+        //   maxHeight: completedCrop?.height,
+        // }}
+      />
     </Container>
   );
 };
-
-interface AspectRatio extends SelectItem {
-  aspect?: number;
-}
-
-const AspectRatios: AspectRatio[] = [
-  {
-    label: 'Free',
-    value: 'free',
-  },
-  {
-    label: 'Original image',
-    value: 'original',
-  },
-  {
-    label: '4 x 5 (Instagram-friendly)',
-    value: '4x5',
-    aspect: 4 / 5,
-  },
-  {
-    label: '16 x 9 (Widescreen)',
-    value: '16x9',
-    aspect: 16 / 9,
-  },
-  {
-    label: 'Custom',
-    value: 'custom',
-  },
-];

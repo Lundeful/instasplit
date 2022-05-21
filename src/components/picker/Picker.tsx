@@ -18,7 +18,7 @@ export const Picker = () => {
     <Container mt={50}>
       <Dropzone
         onDrop={handleFileSelected}
-        onReject={files => console.log('rejected files', files)}
+        onReject={files => console.error('rejected files', files)}
         maxSize={IMAGE_SIZE_IN_MB * 1024 ** 2}
         accept={IMAGE_MIME_TYPE}
         multiple={false}

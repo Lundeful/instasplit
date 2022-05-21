@@ -15,7 +15,6 @@ const useStyles = createStyles(theme => ({
   previewLine: {
     width: 0,
     height: '100%',
-    // marginLeft: -1,
     borderRightWidth: 1,
     borderRightStyle: 'dashed',
     borderRightColor: '#fff',
