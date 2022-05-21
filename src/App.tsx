@@ -4,7 +4,6 @@ import { Hero } from './components/hero/Hero';
 import { Route, Routes } from 'react-router-dom';
 import { Splitter } from './components/splitter/Splitter';
 import { useEffect } from 'react';
-import { Picker } from './components/picker/Picker';
 import { WithLayout } from './components/Layout';
 import { NotFound } from './components/notfound/NotFound';
 import { NotificationsProvider } from '@mantine/notifications';
@@ -14,7 +13,6 @@ import { NotificationsProvider } from '@mantine/notifications';
 
 export enum RouteKeys {
   Home = '/',
-  Upload = '/upload',
   Split = '/split',
   NotFound = '*',
 }
@@ -42,7 +40,6 @@ function App() {
           <WithLayout>
             <Routes>
               <Route path={RouteKeys.Home} element={<Hero />} />
-              <Route path={RouteKeys.Upload} element={<Picker />} />
               <Route path={RouteKeys.Split} element={<Splitter />} />
               <Route path={RouteKeys.NotFound} element={<NotFound />} />
             </Routes>

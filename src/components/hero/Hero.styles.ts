@@ -10,12 +10,12 @@ const useStyles = createStyles(theme => ({
 
   inner: {
     position: 'relative',
-    paddingTop: 100,
+    paddingTop: 50,
     paddingBottom: 120,
 
     [BREAKPOINT]: {
       paddingBottom: 80,
-      paddingTop: 80,
+      paddingTop: 25,
     },
   },
 

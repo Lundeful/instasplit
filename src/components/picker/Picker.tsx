@@ -15,7 +15,7 @@ export const Picker = () => {
   };
 
   return (
-    <Container mt={50}>
+    <Container my={25} p={0}>
       <Dropzone
         onDrop={handleFileSelected}
         onReject={files => console.error('rejected files', files)}
@@ -31,8 +31,8 @@ export const Picker = () => {
 
 const dropZoneContent = (status: DropzoneStatus, theme: MantineTheme) => {
   return (
-    <Group position='center' spacing='xl' style={{ minHeight: 220, pointerEvents: 'none' }}>
-      <ImageUploadIcon status={status} style={{ color: getIconColor(status, theme) }} size={80} />
+    <Group position='center' spacing='xl' style={{ minHeight: 100, pointerEvents: 'none' }}>
+      <ImageUploadIcon status={status} style={{ color: getIconColor(status, theme) }} size={40} />
 
       <div>
         <Text size='xl' inline align='center'>

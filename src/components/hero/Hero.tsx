@@ -1,15 +1,13 @@
 import { Container, Text, Button, useMantineTheme, Alert } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { RouteKeys } from '../../App';
+import { Picker } from '../picker/Picker';
 import useStyles from './Hero.styles';
 
 export function Hero() {
   const { classes, cx } = useStyles();
   const theme = useMantineTheme();
-
-  const [showAlert, setShowAlert] = useState(true);
 
   return (
     <div className={classes.wrapper}>
@@ -23,22 +21,12 @@ export function Hero() {
         </h1>
 
         <Text className={classes.description} color='dimmed'>
-          Split one image into multiple images with a perfect seam to create those amazing panoramas on Instagram.
+          Split one image into multiple images with a perfect seam and create those amazing panoramas on Instagram.
         </Text>
+        <Picker />
 
         <div className={classes.controls}>
           <>
-            <Button
-              component={Link}
-              to={RouteKeys.Upload}
-              size='xl'
-              className={classes.control}
-              variant='gradient'
-              gradient={{ from: '#f6416c', to: '#f86789' }}
-            >
-              Start splitting
-            </Button>
-
             <Button
               component={Link}
               to={RouteKeys.Home}

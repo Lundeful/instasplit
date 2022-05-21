@@ -66,7 +66,7 @@ export const Splitter = () => {
   const loadImageData = useCallback(() => {
     // If state was not passed then we GTFO
     if (!location.state) {
-      navigate(RouteKeys.Upload);
+      navigate(RouteKeys.Home);
     }
     const file = location.state as File;
     const reader = new FileReader();
@@ -103,7 +103,7 @@ export const Splitter = () => {
     <Container>
       <Box mb='sm'>
         <Group my='xs' position='apart'>
-          <Button variant='light' leftIcon={<ArrowBackUp />} component={Link} to={RouteKeys.Upload} />
+          <Button variant='light' leftIcon={<ArrowBackUp />} component={Link} to={RouteKeys.Home} />
           <Button variant='light' leftIcon={<CropIcon />} onClick={() => setShowTools(!showTools)} children='Settings' />
           <Button disabled={!completedCrop} onClick={handleSubmit} children='Split' />
         </Group>
