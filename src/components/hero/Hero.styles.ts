@@ -69,7 +69,7 @@ const useStyles = createStyles(theme => ({
     },
   },
 
-  githubControl: {
+  howToControl: {
     borderWidth: 2,
     borderColor: theme.colorScheme === 'dark' ? 'transparent' : theme.colors.dark[9],
     backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[5] : 'transparent',

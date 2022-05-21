@@ -45,6 +45,17 @@ export function Hero() {
             </Button>
 
             <Button
+              component={Link}
+              to='/howto'
+              size='xl'
+              variant='outline'
+              className={cx(classes.control, classes.howToControl)}
+              color={theme.colorScheme === 'dark' ? 'gray' : 'dark'}
+              disabled={true}
+            >
+              How to use (soon&trade;)
+            </Button>
+            {/* <Button
               component='a'
               // href='https://github.com/lundeful/instasplit'
               href='https://github.com/lundeful'
@@ -55,7 +66,7 @@ export function Hero() {
               disabled={true}
             >
               GitHub (soon&trade;)
-            </Button>
+            </Button> */}
           </>
         </div>
       </Container>

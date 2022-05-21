@@ -1,14 +1,37 @@
 import 'react-image-crop/dist/ReactCrop.css';
-import { Box, Button, Center, Collapse, Container, Group, Image, InputWrapper, Loader, NumberInput, Select, SelectItem, Title } from '@mantine/core';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  ActionIcon,
+  Box,
+  Button,
+  Center,
+  Checkbox,
+  Collapse,
+  Container,
+  Group,
+  Image,
+  InputWrapper,
+  Loader,
+  NumberInput,
+  Select,
+  SelectItem,
+  Switch,
+  Text,
+  Title,
+  useMantineTheme,
+} from '@mantine/core';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ReactCrop, { Crop, PercentCrop } from 'react-image-crop';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowBackUp, ArrowsHorizontal, ArrowsVertical, Tool } from 'tabler-icons-react';
+import { AlignRight, ArrowBackUp, ArrowsHorizontal, ArrowsVertical, Tool, X } from 'tabler-icons-react';
 import { RouteKeys } from '../../App';
 import { IncrementedNumberInput } from '../formcomponents/IncrementedNumberInput';
 import { useDidUpdate } from '@mantine/hooks';
+import useStyles from './Splitter.styles';
 
 export const Splitter = () => {
+  const theme = useMantineTheme();
+  const { classes } = useStyles();
+
   // Route state
   const [loading, setLoading] = useState(true);
   const location = useLocation();
@@ -23,6 +46,7 @@ export const Splitter = () => {
 
   // Crop tools state
   const [showTools, setShowTools] = useState(false);
+  const [showPreviewLines, setShowPreviewLines] = useState(true);
   const [numberOfSplits, setNumberOfSplits] = useState(2);
   const [desiredRatio, setDesiredRatio] = useState<string>('free');
   const [customRatio, setCustomRatio] = useState<{ width: number; height: number }>({ width: 1, height: 1 });
@@ -103,6 +127,17 @@ export const Splitter = () => {
     navigate(RouteKeys.Upload);
   }
 
+  const PreviewLines = () =>
+    useMemo(() => {
+      return (
+        <Box className={classes.previewLinesContainer}>
+          {[...Array(numberOfSplits - 1)].map((e, i) => (
+            <Box className={classes.previewLine} />
+          ))}
+        </Box>
+      );
+    }, [numberOfSplits]);
+
   return (
     <Container>
       <Box mb='sm'>
@@ -116,13 +151,17 @@ export const Splitter = () => {
         </Group>
         <Collapse in={showTools}>
           <Title order={3}>Crop settings</Title>
-          <Group sx={{ alignItems: 'flex-end' }}>
+          <Group sx={{ alignItems: 'flex-start' }} spacing='xl'>
             <IncrementedNumberInput label='Split into' value={numberOfSplits} setValue={setNumberOfSplits} max={20} min={1} />
+
+            <InputWrapper label='Preview lines' sx={{}}>
+              <Checkbox size='xl' checked={showPreviewLines} onChange={event => setShowPreviewLines(event.currentTarget.checked)} />
+            </InputWrapper>
             <InputWrapper label='Aspect ratio'>
-              <Select value={desiredRatio} data={AspectRatios} onChange={val => setDesiredRatio(val ?? '')} />
-              {desiredRatio === 'custom' && (
-                <Group mt={5} spacing={5}>
+              {desiredRatio === 'custom' ? (
+                <Group spacing={5}>
                   <NumberInput
+                    sx={{ maxWidth: 120 }}
                     value={customRatio.width}
                     required
                     icon={<ArrowsHorizontal />}
@@ -131,13 +170,19 @@ export const Splitter = () => {
                     onChange={val => setCustomRatio({ width: val ?? customRatio.width, height: customRatio.height })}
                   />
                   <NumberInput
+                    sx={{ maxWidth: 120 }}
                     value={customRatio.height}
                     icon={<ArrowsVertical />}
                     max={1000}
                     min={1}
                     onChange={val => setCustomRatio({ height: val ?? customRatio.height, width: customRatio.width })}
                   />
+                  <ActionIcon color={theme.primaryColor} variant='filled' size='lg' onClick={() => setDesiredRatio('free')}>
+                    <X />
+                  </ActionIcon>
                 </Group>
+              ) : (
+                <Select value={desiredRatio} data={AspectRatios} onChange={val => setDesiredRatio(val ?? '')} />
               )}
             </InputWrapper>
           </Group>
@@ -151,6 +196,7 @@ export const Splitter = () => {
         imgSrc !== undefined && (
           <Center my='xl'>
             <ReactCrop
+              renderSelectionAddon={() => (showPreviewLines ? <PreviewLines /> : null)}
               keepSelection
               crop={crop}
               onChange={(_, percentCrop) => setCrop(percentCrop)}
@@ -165,7 +211,7 @@ export const Splitter = () => {
       )}
       <Group position='center'>
         <Button disabled onClick={() => console.log(completedCrop)}>
-          Split (soon&trade;)
+          Split (soon&trade;, working out some bugs)
         </Button>
         {/* <Button disabled={!completedCrop}>Preview</Button> 
         <Button disabled={!completedCrop} onClick={() => console.log(completedCrop)}>

@@ -1,4 +1,3 @@
-import './App.css';
 import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core';
 import { useColorScheme, useLocalStorage } from '@mantine/hooks';
 import { Hero } from './components/hero/Hero';
