@@ -23,11 +23,11 @@ import { RouteKeys } from '../../App';
 import { IncrementedNumberInput } from '../formcomponents/IncrementedNumberInput';
 import { useDidUpdate } from '@mantine/hooks';
 import { AspectRatios } from './types';
-import { downloadFile } from '../../utilities/downloadFile';
 import { getCrop } from '../../utilities/getCrop';
 import { getAspectRatio } from '../../utilities/getAspectRatio';
 import { PreviewLines } from './PreviewLines';
 import { getCroppedImages } from '../../utilities/imageCropper';
+import { saveAs } from 'file-saver';
 
 export const Splitter = () => {
   const theme = useMantineTheme();
@@ -92,7 +92,10 @@ export const Splitter = () => {
       const originalFileName = file.name.split('.');
       originalFileName.pop();
       const images = getCroppedImages(imgRef.current, numberOfSplits, completedCrop as PixelCrop, file.type);
-      images.forEach((image, i) => downloadFile(image, `${originalFileName}-instasplit-${i + 1}`));
+      images.forEach((image, i) => {
+        const fileType = image.split(';').shift()?.split('/').pop() ?? 'jpg';
+        saveAs(image, `${originalFileName}-instasplit-${i + 1}.${fileType}`, { autoBom: true });
+      });
     } catch (e) {
       console.error(e);
       // TODO: Display error message to user
