@@ -1,4 +1,4 @@
-import { Container, Text, Button, useMantineTheme, Alert } from '@mantine/core';
+import { Container, Text, Button, useMantineTheme } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { Link } from 'react-router-dom';
 import { RouteKeys } from '../../App';

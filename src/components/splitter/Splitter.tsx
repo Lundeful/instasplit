@@ -18,7 +18,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowBackUp, ArrowsHorizontal, ArrowsVertical, Crop as CropIcon, X } from 'tabler-icons-react';
+import { ArrowBackUp, ArrowsHorizontal, ArrowsVertical, Crop as CropIcon, ExclamationMark, X } from 'tabler-icons-react';
 import { RouteKeys } from '../../App';
 import { IncrementedNumberInput } from '../formcomponents/IncrementedNumberInput';
 import { useDidUpdate } from '@mantine/hooks';
@@ -28,6 +28,8 @@ import { getAspectRatio } from '../../utilities/getAspectRatio';
 import { PreviewLines } from './PreviewLines';
 import { getCroppedImages } from '../../utilities/imageCropper';
 import { saveAs } from 'file-saver';
+import JSZip from 'jszip';
+import { showNotification } from '@mantine/notifications';
 
 export const Splitter = () => {
   const theme = useMantineTheme();
@@ -50,6 +52,7 @@ export const Splitter = () => {
   const [numberOfSplits, setNumberOfSplits] = useState(2);
   const [desiredRatio, setDesiredRatio] = useState<string>('free');
   const [customRatio, setCustomRatio] = useState<{ width: number; height: number }>({ width: 1, height: 1 });
+  const [useZip, setUseZip] = useState(window.innerWidth < 700);
 
   useEffect(() => {
     setAspect(getAspectRatio(desiredRatio, numberOfSplits, customRatio, imgRef.current?.width, imgRef.current?.height));
@@ -84,6 +87,11 @@ export const Splitter = () => {
     if (!completedCrop || !imgRef.current) {
       // Todo: Display error message to user
       console.error('Missing image reference or completed crop');
+      showNotification({
+        title: 'Error!',
+        message: 'There was an error while cropping and saving. Please try again',
+        icon: <ExclamationMark />,
+      });
       return;
     }
 
@@ -92,12 +100,31 @@ export const Splitter = () => {
       const originalFileName = file.name.split('.');
       originalFileName.pop();
       const images = await getCroppedImages(imgRef.current, numberOfSplits, completedCrop as PixelCrop, file.type);
+      if (useZip) {
+        // Zip file is recommended for mobile users
+        var zip = new JSZip();
+        images.forEach((image, i) => {
+          const fileType = image.type.split('/').pop() ?? 'jpg';
+          zip.file(`${originalFileName}-instasplit-${i + 1}.${fileType}`, image);
+        });
+
+        zip.generateAsync({ type: 'blob' }).then(content => {
+          saveAs(content, `${originalFileName}-instasplit.zip`);
+        });
+
+        return;
+      }
+
       images.forEach((image, i) => {
         saveAs(image, `${originalFileName}-instasplit-${i + 1}`);
       });
     } catch (e) {
       console.error(e);
-      // TODO: Display error message to user
+      showNotification({
+        title: 'Error!',
+        message: 'There was an error while cropping and saving. Please try again',
+        icon: <ExclamationMark />,
+      });
     }
   };
 
@@ -116,6 +143,25 @@ export const Splitter = () => {
 
               <InputWrapper label='Preview lines' sx={{}}>
                 <Checkbox size='xl' checked={showPreviewLines} onChange={event => setShowPreviewLines(event.currentTarget.checked)} />
+              </InputWrapper>
+              <InputWrapper label='Save as .zip' sx={{}}>
+                <Checkbox
+                  size='xl'
+                  checked={useZip}
+                  onChange={event => {
+                    const isChecked = event.currentTarget.checked;
+                    if (window.innerWidth < 700 && !isChecked) {
+                      showNotification({
+                        title: 'Important message for mobile users!',
+                        icon: <ExclamationMark />,
+                        message:
+                          'Due to mobile browser limitations it is recommended you download as a zip.\nNot using a zip file might result in you only downloading the last file.',
+                        autoClose: false,
+                      });
+                    }
+                    setUseZip(isChecked);
+                  }}
+                />
               </InputWrapper>
               <InputWrapper label='Aspect ratio'>
                 {desiredRatio === 'custom' ? (
