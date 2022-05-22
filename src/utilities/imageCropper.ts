@@ -1,7 +1,7 @@
 import { PixelCrop } from 'react-image-crop';
 
-export const getCroppedImages = (image: HTMLImageElement, numberOfSplits: number, crop: PixelCrop, mimeType: string): string[] => {
-  const croppedImages: string[] = [];
+export const getCroppedImages = async (image: HTMLImageElement, numberOfSplits: number, crop: PixelCrop, mimeType: string): Promise<Blob[]> => {
+  const croppedImages: Blob[] = [];
 
   if (crop.unit !== 'px') {
     console.error("Crop unit was not in 'px'");
@@ -32,7 +32,8 @@ export const getCroppedImages = (image: HTMLImageElement, numberOfSplits: number
     const cropY = crop.y * scaleY;
 
     ctx.drawImage(image, -cropX, -cropY);
-    croppedImages.push(canvas.toDataURL(mimeType, 1));
+    const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(blob => resolve(blob), mimeType));
+    if (blob) croppedImages.push(blob);
     ctx.restore();
   }
 

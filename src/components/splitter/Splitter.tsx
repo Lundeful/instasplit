@@ -80,7 +80,7 @@ export const Splitter = () => {
 
   useEffect(loadImageData, [loadImageData]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!completedCrop || !imgRef.current) {
       // Todo: Display error message to user
       console.error('Missing image reference or completed crop');
@@ -91,10 +91,9 @@ export const Splitter = () => {
       const file = location.state as File;
       const originalFileName = file.name.split('.');
       originalFileName.pop();
-      const images = getCroppedImages(imgRef.current, numberOfSplits, completedCrop as PixelCrop, file.type);
+      const images = await getCroppedImages(imgRef.current, numberOfSplits, completedCrop as PixelCrop, file.type);
       images.forEach((image, i) => {
-        const fileType = image.split(';').shift()?.split('/').pop() ?? 'jpg';
-        saveAs(image, `${originalFileName}-instasplit-${i + 1}.${fileType}`, { autoBom: true });
+        saveAs(image, `${originalFileName}-instasplit-${i + 1}`);
       });
     } catch (e) {
       console.error(e);
