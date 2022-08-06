@@ -1,7 +1,9 @@
 # Instasplit
 
+Checkout the app at [instasplit.app](instasplit.app)
+
 Instasplit is a web app that allows you to split an image into multiple images that work perfectly with Instagram and makes it look like one long panorama.
-Example: https://www.instagram.com/p/CfKqb0zKH9D/
+[Example](https://www.instagram.com/p/CfKqb0zKH9D/)
 
 
 ## Available Scripts
