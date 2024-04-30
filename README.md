@@ -1,6 +1,6 @@
 # Instasplit
 
-Use the app for free at [instasplit.app](https://instasplit.app)
+Use the app for free at [instasplit.app]([https://instasplit.app](https://instasplit.vercel.app))
 
 Instasplit is a web app that allows you to split an image into multiple images that work perfectly with Instagram and makes it look like one long panorama.
 
