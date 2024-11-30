@@ -24,41 +24,6 @@ export function Hero() {
           Split one image into multiple images with a perfect seam and create those amazing panoramas on Instagram.
         </Text>
         <Picker />
-
-        <div className={classes.controls}>
-          <>
-            <Button
-              component={Link}
-              to={RouteKeys.Home}
-              size='xl'
-              variant='outline'
-              className={cx(classes.control, classes.howToControl)}
-              color={theme.colorScheme === 'dark' ? 'gray' : 'dark'}
-              onClick={() =>
-                showNotification({
-                  title: 'What are you doing?',
-                  message: 'The button said soon. Be patient and check back later',
-                  icon: '🤨',
-                  color: '#fff',
-                })
-              }
-            >
-              How to use (soon&trade;)
-            </Button>
-            {/* <Button
-              component='a'
-              // href='https://github.com/lundeful/instasplit'
-              href='https://github.com/lundeful'
-              size='xl'
-              variant='outline'
-              className={cx(classes.control, classes.githubControl)}
-              color={theme.colorScheme === 'dark' ? 'gray' : 'dark'}
-              disabled={true}
-            >
-              GitHub (soon&trade;)
-            </Button> */}
-          </>
-        </div>
       </Container>
     </div>
   );
