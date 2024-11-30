@@ -1,7 +1,4 @@
-import { Container, Text, Button, useMantineTheme } from '@mantine/core';
-import { showNotification } from '@mantine/notifications';
-import { Link } from 'react-router-dom';
-import { RouteKeys } from '../../App';
+import { Container, Text, useMantineTheme } from '@mantine/core';
 import { Picker } from '../picker/Picker';
 import useStyles from './Hero.styles';
 
