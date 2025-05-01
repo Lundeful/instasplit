@@ -1,5 +1,5 @@
-import { Group, ActionIcon, NumberInput, NumberInputHandlers, InputWrapper } from '@mantine/core';
-import { Dispatch, SetStateAction, useRef } from 'react';
+import { Dispatch, SetStateAction } from 'react';
+import { Input } from '../ui/input';
 
 type Props = {
   label?: string;
@@ -10,35 +10,61 @@ type Props = {
 };
 
 export const IncrementedNumberInput = ({ value, setValue, min, max, label }: Props) => {
-  const handlers = useRef<NumberInputHandlers>();
+  const handleIncrement = () => {
+    if (max !== undefined && value >= max) return;
+    setValue(prev => prev + 1);
+  };
 
-  const handleOnChange = (newValue?: number) => {
-    if (newValue) setValue(newValue);
+  const handleDecrement = () => {
+    if (min !== undefined && value <= min) return;
+    setValue(prev => prev - 1);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = parseInt(e.target.value, 10);
+    if (isNaN(newValue)) return;
+
+    if (min !== undefined && newValue < min) {
+      setValue(min);
+    } else if (max !== undefined && newValue > max) {
+      setValue(max);
+    } else {
+      setValue(newValue);
+    }
   };
 
   return (
-    <InputWrapper label={label}>
-      <Group spacing={5}>
-        <ActionIcon size={36} variant='default' onClick={() => handlers.current?.decrement()}>
+    <div className="space-y-2">
+      {label && <label className="text-sm font-medium">{label}</label>}
+      <div className="flex items-center space-x-1">
+        <button
+          type="button"
+          className="flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-lg hover:bg-accent hover:text-accent-foreground"
+          onClick={handleDecrement}
+          disabled={min !== undefined && value <= min}
+        >
           –
-        </ActionIcon>
+        </button>
 
-        <NumberInput
-          variant='unstyled'
-          hideControls
+        <Input
+          type="number"
           value={value}
-          onChange={handleOnChange}
-          handlersRef={handlers}
-          max={max}
+          onChange={handleChange}
           min={min}
+          max={max}
           step={1}
-          styles={{ input: { width: 36, textAlign: 'center' } }}
+          className="w-12 text-center px-0"
         />
 
-        <ActionIcon size={36} variant='default' onClick={() => handlers.current?.increment()}>
+        <button
+          type="button"
+          className="flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-lg hover:bg-accent hover:text-accent-foreground"
+          onClick={handleIncrement}
+          disabled={max !== undefined && value >= max}
+        >
           +
-        </ActionIcon>
-      </Group>
-    </InputWrapper>
+        </button>
+      </div>
+    </div>
   );
 };

@@ -1,6 +1,6 @@
-import { SelectItem } from "@mantine/core";
-
-export interface AspectRatio extends SelectItem {
+export interface AspectRatio {
+  label: string;
+  value: string;
   aspect?: number;
 }
 

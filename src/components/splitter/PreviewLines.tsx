@@ -1,14 +1,9 @@
-import { Box } from '@mantine/core';
-import useStyles from './PreviewLines.styles';
-
 export const PreviewLines = ({ numberOfSplits }: { numberOfSplits: number }) => {
-  const { classes } = useStyles();
-
   return (
-    <Box className={classes.previewLinesContainer}>
-      {[...Array(numberOfSplits - 1)].map((e, i) => (
-        <Box key={i} className={classes.previewLine} />
+    <div className="w-full h-full absolute flex justify-evenly items-center">
+      {[...Array(numberOfSplits - 1)].map((_, i) => (
+        <div key={i} className="w-0 h-full border-r border-dashed border-white" />
       ))}
-    </Box>
+    </div>
   );
 };
