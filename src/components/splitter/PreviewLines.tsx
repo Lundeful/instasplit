@@ -1,9 +1,9 @@
-export const PreviewLines = ({ numberOfSplits }: { numberOfSplits: number }) => {
-  return (
-    <div className="w-full h-full absolute flex justify-evenly items-center">
-      {[...Array(numberOfSplits - 1)].map((_, i) => (
-        <div key={i} className="w-0 h-full border-r border-dashed border-white" />
-      ))}
-    </div>
-  );
+export const PreviewLines = ({numberOfSplits}: { numberOfSplits: number }) => {
+    return (
+        <div className="w-full h-full absolute flex justify-evenly items-center">
+            {[...Array(numberOfSplits - 1)].map((_, i) => (
+                <div key={i} className="w-0 h-full border-r border-dashed border-white"/>
+            ))}
+        </div>
+    );
 };
